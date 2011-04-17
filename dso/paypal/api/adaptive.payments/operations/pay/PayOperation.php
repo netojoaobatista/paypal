@@ -7,6 +7,7 @@
 
 require_once 'dso/paypal/api/adaptive.payments/operations/AbstractAdaptativePaymentsOperation.php';
 require_once 'dso/paypal/api/adaptive.payments/operations/pay/request/PayRequest.php';
+require_once 'dso/paypal/api/adaptive.payments/operations/pay/request/PayRequestMessageBuilder.php';
 
 /**
  * Use the Pay API operation to transfer funds from a sender's PayPal
@@ -26,11 +27,15 @@ class PayOperation extends AbstractAdaptativePaymentsOperation {
 	 * @see		PayPalOperation::call()
 	 */
 	public function call() {
-		$requestMessage = $this->paypalMessageFactory->createMessageElement();
+		if ( $this->request != null ) {
+			$messageBuilder = new PayRequestMessageBuilder( $this->request , $this->paypalMessageFactory );
 
-		$httpConnection->setRequestBody( $requestMessage->draw() );
+			$this->httpConnection->setRequestBody( $messageBuilder->getMessage()->draw() );
 
-		return $this->httpConnection->execute( self::BASE_PATH . 'Pay' , HTTPRequestMethod::POST );
+			return $this->httpConnection->execute( self::BASE_PATH . 'Pay' , HTTPRequestMethod::POST );
+		} else {
+			throw new BadMethodCallException( 'The pay request was not created yet.' );
+		}
 	}
 
 	/**

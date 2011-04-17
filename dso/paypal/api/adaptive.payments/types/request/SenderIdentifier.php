@@ -1,5 +1,5 @@
 <?php
-require_once 'dso/paypal/api/adaptive.payments/types/AbstractPayPalType.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/AccountIdentifier.php';
 
 /**
  * Sender’s identifying information.

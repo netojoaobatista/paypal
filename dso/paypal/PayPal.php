@@ -9,7 +9,9 @@ require_once 'rpo/core/Object.php';
 require_once 'rpo/http/HTTPConnection.php';
 require_once 'rpo/http/HTTPCookieManager.php';
 require_once 'dso/paypal/PayPal3TokenAuthenticator.php';
-require_once 'api/adaptive.payments/AdaptativePayments.php';
+require_once 'dso/paypal/api/adaptive.payments/AdaptativePayments.php';
+require_once 'dso/paypal/message/json/JSONMessageFactory.php';
+require_once 'dso/paypal/message/xml/XMLMessageFactory.php';
 
 /**
  * The PayPal class offers an simple interface to call an PayPal API
@@ -107,8 +109,9 @@ class PayPal extends Object {
 		switch ( $this->requestDataFormat ) {
 			case 'JSON':
 				return new JSONMessageFactory();
-			case 'NVP' :
 			case 'XML' :
+				return new XMLMessageFactory();
+			case 'NVP' :
 			default:
 				throw new RuntimeException( 'The "' . $this->requestDataFormat . '" request data format is not yet implemented.' );
 		}

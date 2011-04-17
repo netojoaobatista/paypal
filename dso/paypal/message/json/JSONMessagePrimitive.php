@@ -19,6 +19,7 @@ class JSONMessagePrimitive extends PayPalMessagePrimitive {
 		switch ( $this->type ) {
 			case 'boolean' :
 				return $this->value ? 'true' : 'false';
+			case 'double' :
 			case 'float' :
 			case 'integer':
 				return (string) $this->value;

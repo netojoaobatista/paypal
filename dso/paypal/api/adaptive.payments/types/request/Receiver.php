@@ -125,7 +125,7 @@ class Receiver extends AbstractPayPalType {
 	 * @return	boolean
 	 */
 	public function isPrimary() {
-		return $this->primary === true;
+		return $this->primary != null ? $this->primary === true : null;
 	}
 
 	/**

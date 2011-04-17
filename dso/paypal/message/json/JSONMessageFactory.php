@@ -19,7 +19,7 @@ class JSONMessageFactory extends AbstractPayPalMessageFactory {
 	 * @return	JSONMessageElement
 	 * @see		AbstractPayPalMessageFactory::createMessageElement()
 	 */
-	public function createMessageElement( $name ) {
+	public function createMessageElement( $name = null ) {
 		return new JSONMessageElement( $name );
 	}
 
@@ -37,7 +37,7 @@ class JSONMessageFactory extends AbstractPayPalMessageFactory {
 	 * @return	JSONMessageList
 	 * @see		AbstractPayPalMessageFactory::createMessageList()
 	 */
-	public function createMessageList( $name ) {
+	public function createMessageList( $name = null ) {
 		return new JSONMessageList( $name );
 	}
 
