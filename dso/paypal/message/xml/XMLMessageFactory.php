@@ -12,7 +12,7 @@ class XMLMessageFactory extends AbstractPayPalMessageFactory {
 	 * @return	PayPalMessageElement
 	 * @see		AbstractPayPalMessageFactory::createMessageElement()
 	 */
-	public function createMessageElement( $name ) {
+	public function createMessageElement( $name = null ) {
 		return new XMLMessageElement( $name );
 	}
 
@@ -30,7 +30,7 @@ class XMLMessageFactory extends AbstractPayPalMessageFactory {
 	 * @return	PayPalMessageList
 	 * @see		AbstractPayPalMessageFactory::createMessageList()
 	 */
-	public function createMessageList( $name ) {
+	public function createMessageList( $name = null ) {
 		return new XMLMessageElement( $name );
 	}
 

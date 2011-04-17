@@ -20,7 +20,7 @@ abstract class AbstractPayPalMessageFactory extends Object {
 	 * @param	string $name The name of the element.
 	 * @return	PayPalMessageElement
 	 */
-	public abstract function createMessageElement( $name );
+	public abstract function createMessageElement( $name = null );
 
 	/**
 	 * Creates an abstract product that represents a pair field-value.
@@ -35,7 +35,7 @@ abstract class AbstractPayPalMessageFactory extends Object {
 	 * * @param	string $name The name of the list.
 	 * @return	PayPalMessageList
 	 */
-	public abstract function createMessageList( $name );
+	public abstract function createMessageList( $name = null );
 
 	/**
 	 * Creates an abstract product that represents a primitive

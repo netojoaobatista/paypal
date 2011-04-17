@@ -1,15 +1,32 @@
 <?php
 require_once 'dso/paypal/api/adaptive.payments/types/AbstractPayPalType.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/Receiver.php';
 
 /**
  * Information about the receivers of the payment.
  */
-class ReceiverList extends AbstractPayPalType {
+class ReceiverList extends AbstractPayPalType implements Countable, IteratorAggregate {
 	/**
 	 * Receiver is the party whose account is credited.
 	 * @var	array[Receiver]
 	 */
 	private $receiver = array();
+
+	/**
+	 * @return	integer
+	 * @see		Countable::count()
+	 */
+	public function count() {
+		return count( $this->receiver );
+	}
+
+	/**
+	 * @return	Iterator[Receiver]
+	 * @see		IteratorAggregate::getIterator()
+	 */
+	public function getIterator() {
+		return new ArrayIterator( $this->receiver );
+	}
 
 	/**
 	 * The receiver whose account is credited.

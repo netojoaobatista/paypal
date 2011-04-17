@@ -33,6 +33,7 @@ abstract class PayPalMessagePrimitive extends PayPalMessageComponent {
 
 		switch ( $type ){
 			case 'boolean' :
+			case 'double' :
 			case 'float' :
 			case 'integer' :
 			case 'string' :
@@ -40,7 +41,7 @@ abstract class PayPalMessagePrimitive extends PayPalMessageComponent {
 				$this->type = $type;
 				break;
 			default :
-				throw new InvalidArgumentException( 'Only primitive values are allowed.' );
+				throw new InvalidArgumentException( 'Only primitive values are allowed, (' . $type . ') >' . $value . '< given.' );
 		}
 	}
 }

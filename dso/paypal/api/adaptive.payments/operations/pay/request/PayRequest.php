@@ -6,6 +6,13 @@
  */
 
 require_once 'dso/paypal/api/adaptive.payments/types/PayPalRequest.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/ClientDetails.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/CurrencyCode.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/FundingConstraint.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/PhoneNumberType.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/ReceiverList.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/RequestEnvelope.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/SenderIdentifier.php';
 
 /**
  * The PayRequest contains the instructions required to make a payment.
@@ -45,7 +52,7 @@ class PayRequest extends PayPalRequest {
 	 * </ul>
 	 * @var	string
 	 */
-	private $actionType;
+	private $actionType = PayRequest::ACTION_PAY;
 
 	/**
 	 * URL to redirect the sender’s browser to after canceling the
@@ -177,6 +184,18 @@ class PayRequest extends PayPalRequest {
 		}
 
 		return $this->clientDetails;
+	}
+
+	/**
+	 * The currency code.
+	 * @return	CurrencyCode
+	 */
+	public function currencyCode() {
+		if ( $this->currencyCode == null ) {
+			$this->currencyCode = CurrencyCode::create( 'USD' );
+		}
+
+		return $this->currencyCode;
 	}
 
 	/**
