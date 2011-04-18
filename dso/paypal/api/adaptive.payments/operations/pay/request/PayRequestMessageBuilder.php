@@ -21,6 +21,73 @@ class PayRequestMessageBuilder extends Object {
 		$this->buildPayRequest( $payRequest , $factory );
 	}
 
+	private function buildClientDetails( ClientDetails $clientDetails , AbstractPayPalMessageFactory $factory ) {
+		$applicationId = $clientDetails->getApplicationId();
+		$customerId = $clientDetails->getCustomerId();
+		$customerType = $clientDetails->getCustomerType();
+		$deviceId = $clientDetails->getDeviceId();
+		$geoLocation = $clientDetails->getGeoLocation();
+		$ipAddress = $clientDetails->getIpAddress();
+		$model = $clientDetails->getModel();
+		$partnerName = $clientDetails->getPartnerName();
+
+		$clientDetailsElement = $factory->createMessageElement();
+
+		if ( $applicationId != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'applicationId' , $factory->createMessagePrimitive( $applicationId ) ) );
+		}
+
+		if ( $customerId != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'customerId' , $factory->createMessagePrimitive( $customerId ) ) );
+		}
+
+		if ( $customerType != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'customerType' , $factory->createMessagePrimitive( $customerType ) ) );
+		}
+
+		if ( $deviceId != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'deviceId' , $factory->createMessagePrimitive( $deviceId ) ) );
+		}
+
+		if ( $geoLocation != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'geoLocation' , $factory->createMessagePrimitive( $geoLocation ) ) );
+		}
+
+		if ( $ipAddress != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'ipAddress' , $factory->createMessagePrimitive( $ipAddress ) ) );
+		}
+
+		if ( $model != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'model' , $factory->createMessagePrimitive( $model ) ) );
+		}
+
+		if ( $partnerName != null ) {
+			$clientDetails->addChild( $factory->createMessageField( 'partnerName' , $factory->createMessagePrimitive( $partnerName ) ) );
+		}
+
+		return $clientDetailsElement;
+	}
+
+	private function buildFundingConstraint( FundingConstraint $fundingConstraint , AbstractPayPalMessageFactory $factory ) {
+		$allowedFundingType = $fundingConstraint->allowedFundingType();
+		$allowedFundingConstraintElement = $factory->createMessageElement();
+		$allowedFundingTypeList = $factory->createMessageList();
+
+		foreach ( $allowedFundingType->getIterator() as $fundingType ) {
+			$fundingInfoElement = $factory->createMessageElement();
+			$fundingInfoElement->addChild( $factory->createMessageField( 'fundingType' , $factory->createMessagePrimitive( $fundingType ) ) );
+
+			$allowedFundingTypeList->addChild( $fundingInfoElement );
+		}
+
+		$fundingTypeInfoElement = $factory->createMessageField( 'fundingTypeInfo' , $allowedFundingTypeList );
+		$allowedFundingTypeElement = $factory->createMessageElement();
+		$allowedFundingTypeElement->addChild( $fundingTypeInfoElement );
+		$allowedFundingConstraintElement->addChild( $factory->createMessageField( 'allowedFundingType' , $allowedFundingTypeElement ) );
+
+		return $allowedFundingConstraintElement;
+	}
+
 	private function buildPayRequest( PayRequest $request , AbstractPayPalMessageFactory $factory ) {
 		$this->message = $factory->createMessageElement();
 		$this->message->addChild( $factory->createMessageField( 'actionType' , $factory->createMessagePrimitive( $request->getActionType() ) ) );
@@ -32,6 +99,26 @@ class PayRequestMessageBuilder extends Object {
 
 		$this->message->addChild( $factory->createMessageField( 'currencyCode' , $factory->createMessagePrimitive( $request->currencyCode()->value() ) ) );
 
+		if ( $request->getFundingConstraint() != null ) {
+			$this->message->addChild( $factory->createMessageField( 'fundingConstraint' , $this->buildFundingConstraint( $request->fundingConstraint() , $factory ) ) );
+		}
+
+		if ( ( $ipnNotificationUrl = $request->getIpnNotificationUrl() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'ipnNotificationUrl' , $factory->createMessagePrimitive( $ipnNotificationUrl ) ) );
+		}
+
+		if ( ( $memo = $request->getMemo() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'memo' , $factory->createMessagePrimitive( $memo ) ) );
+		}
+
+		if ( ( $pin = $request->getPin() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'pin' , $factory->createMessagePrimitive( $pin ) ) );
+		}
+
+		if ( ( $preaprovalKey = $request->getPreaprovalKey() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'preaprovalKey' , $factory->createMessagePrimitive( $preaprovalKey ) ) );
+		}
+
 		if ( $request->receiverList()->count() > 0 ) {
 			$this->message->addChild( $factory->createMessageField( 'receiverList' , $this->buildReceiverList( $request->receiverList() , $factory ) ) );
 		} else {
@@ -40,23 +127,34 @@ class PayRequestMessageBuilder extends Object {
 
 		$this->message->addChild( $factory->createMessageField( 'returnUrl' , $factory->createMessagePrimitive( $request->getReturnUrl() ) ) );
 		$this->message->addChild( $factory->createMessageField( 'requestEnvelope' , $this->buildRequestEnvelope( $request->requestEnvelope() , $factory ) ) );
-	}
 
-	private function buildClientDetails( ClientDetails $clientDetails , AbstractPayPalMessageFactory $factory ) {
-
-	}
-
-	private function buildReceiverList( ReceiverList $receiverList , AbstractPayPalMessageFactory $factory ) {
-		$receiverElement = $factory->createMessageList();
-
-		foreach ( $receiverList->getIterator() as $receiver ) {
-			$receiverElement->addChild( $this->buildReceiver( $receiver , $factory ) );
+		if ( ( $reverseAllParallelPaymentsOnError = $request->getReverseAllParallelPaymentsOnError() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'reverseAllParallelPaymentsOnError' , $factory->createMessagePrimitive( $reverseAllParallelPaymentsOnError ) ) );
 		}
 
-		$receiverListElement = $factory->createMessageElement();
-		$receiverListElement->addChild( $factory->createMessageField( 'receiver' , $receiverElement ) );
+		if ( $request->getSender() != null ) {
+			$this->message->addChild( $factory->createMessageField( 'sender' , $this->buildSender( $request->sender() , $factory ) ) );
+		}
 
-		return $receiverListElement;
+		if ( ( $senderEmail = $request->getSenderEmail() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'senderEmail' , $factory->createMessagePrimitive( $senderEmail ) ) );
+		}
+
+		if ( ( $trackingId = $request->getTrackingId() ) != null ) {
+			$this->message->addChild( $factory->createMessageField( 'trackingId' , $factory->createMessagePrimitive( $trackingId ) ) );
+		}
+	}
+
+	private function buildPhoneNumber( PhoneNumberType $phoneNumber , AbstractPayPalMessageFactory $factory ) {
+		$phoneElement = $factory->createMessageElement();
+		$phoneElement->addChild( $factory->createMessageField( 'countryCode' , $phoneNumber->getCountryCode() ) );
+		$phoneElement->addChild( $factory->createMessageField( 'phoneNumber' , $phoneNumber->getPhoneNumber() ) );
+
+		if ( ( $phoneExtension = $phoneNumber->getExtension() ) != null ) {
+			$phoneElement->addChild( $factory->createMessageField( 'extension' , $phoneExtension ) );
+		}
+
+		return $phoneElement;
 	}
 
 	private function buildReceiver( Receiver $receiver , AbstractPayPalMessageFactory $factory ) {
@@ -102,16 +200,17 @@ class PayRequestMessageBuilder extends Object {
 		}
 	}
 
-	private function buildPhoneNumber( PhoneNumberType $phoneNumber , AbstractPayPalMessageFactory $factory ) {
-		$phoneElement = $factory->createMessageElement();
-		$phoneElement->addChild( $factory->createMessageField( 'countryCode' , $phoneNumber->getCountryCode() ) );
-		$phoneElement->addChild( $factory->createMessageField( 'phoneNumber' , $phoneNumber->getPhoneNumber() ) );
+	private function buildReceiverList( ReceiverList $receiverList , AbstractPayPalMessageFactory $factory ) {
+		$receiverElement = $factory->createMessageList();
 
-		if ( ( $phoneExtension = $phoneNumber->getExtension() ) != null ) {
-			$phoneElement->addChild( $factory->createMessageField( 'extension' , $phoneExtension ) );
+		foreach ( $receiverList->getIterator() as $receiver ) {
+			$receiverElement->addChild( $this->buildReceiver( $receiver , $factory ) );
 		}
 
-		return $phoneElement;
+		$receiverListElement = $factory->createMessageElement();
+		$receiverListElement->addChild( $factory->createMessageField( 'receiver' , $receiverElement ) );
+
+		return $receiverListElement;
 	}
 
 	private function buildRequestEnvelope( RequestEnvelope $requestEnvelope , AbstractPayPalMessageFactory $factory ) {
@@ -120,6 +219,24 @@ class PayRequestMessageBuilder extends Object {
 		$requestEnvelopeElement->addChild( $factory->createMessageField( 'detailLevel' , $factory->createMessagePrimitive( $requestEnvelope->getDetailLevel() ) ) );
 
 		return $requestEnvelopeElement;
+	}
+
+	private function buildSender( SenderIdentifier $sender , AbstractPayPalMessageFactory $factory ) {
+		$senderIdentifierElement = $factory->createMessageElement();
+
+		if ( ( $email = $sender->getEmail() ) != null ) {
+			$senderIdentifierElement->addChild( $factory->createMessageField( 'email' , $factory->createMessagePrimitive( $email ) ) );
+		}
+
+		if ( ( $phone = $sender->getPhone() ) != null ) {
+			$senderIdentifierElement->addChild( $factory->createMessageField( 'phone' , $this->buildPhoneNumber( $phone , $factory ) ) );
+		}
+
+		if ( ( $useCredentials = $sender->getUseCredentials() ) != null ) {
+			$senderIdentifierElement->addChild( $factory->createMessageField( 'useCredentials' , $factory->createMessagePrimitive( $useCredentials == true ? true : false ) ) );
+		}
+
+		return $senderIdentifierElement;
 	}
 
 	/**

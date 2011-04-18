@@ -1,5 +1,6 @@
 <?php
 require_once 'dso/paypal/api/adaptive.payments/types/AbstractPayPalType.php';
+require_once 'dso/paypal/api/adaptive.payments/types/request/FundingTypeList.php';
 
 /**
  * Specifies a list of allowed funding selections for the payment<br /><p>This

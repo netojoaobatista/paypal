@@ -14,7 +14,7 @@ require_once 'dso/paypal/api/adaptive.payments/types/AbstractPayPalType.php';
  * To use iACH, omit this field and do not specify a funding source for the
  * payment.
  */
-class FundingTypeList extends AbstractPayPalType {
+class FundingTypeList extends AbstractPayPalType implements Countable, IteratorAggregate {
 	/**
 	 * Electronic check.
 	 */
@@ -62,5 +62,21 @@ class FundingTypeList extends AbstractPayPalType {
 			default :
 				throw new InvalidArgumentException( 'The "' . $fundingTypeInfo . '" is not allowed.' );
 		}
+	}
+
+	/**
+	 * @return	integer
+	 * @see		Countable::count()
+	 */
+	public function count() {
+		return count( $this->fundingTypeInfo );
+	}
+
+	/**
+	 * @return	Iterator[string]
+	 * @see		IteratorAggregate::getIterator()
+	 */
+	public function getIterator() {
+		return new ArrayIterator( $this->fundingTypeInfo );
 	}
 }
