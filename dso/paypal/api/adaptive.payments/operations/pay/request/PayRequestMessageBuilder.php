@@ -1,22 +1,23 @@
 <?php
-require_once 'rpo/core/Object.php';
+/**
+ * Request related objects of pay operation.
+ * @author	João Batista Neto
+ * @package	dso.paypal.api.adaptative.payments.operations.pay.request
+ */
+
+require_once 'dso/paypal/api/adaptive.payments/operations/AbstractMessageBuilder.php';
 
 /**
  *
  */
-class PayRequestMessageBuilder extends Object {
-	/**
-	 * @var	PayPalMessageContainer
-	 */
-	private $message;
-
+class PayRequestMessageBuilder extends AbstractMessageBuilder {
 	/**
 	 * Creates the builder instance to build the request message
 	 * @param	PayRequest $payRequest
 	 * @param	AbstractPayPalMessageFactory $factory
 	 */
 	public function __construct( PayRequest $payRequest , AbstractPayPalMessageFactory $factory ) {
-		parent::__construct();
+		parent::__construct( $factory->createMessageElement() );
 
 		$this->buildPayRequest( $payRequest , $factory );
 	}
@@ -89,7 +90,6 @@ class PayRequestMessageBuilder extends Object {
 	}
 
 	private function buildPayRequest( PayRequest $request , AbstractPayPalMessageFactory $factory ) {
-		$this->message = $factory->createMessageElement();
 		$this->message->addChild( $factory->createMessageField( 'actionType' , $factory->createMessagePrimitive( $request->getActionType() ) ) );
 		$this->message->addChild( $factory->createMessageField( 'cancelUrl' , $factory->createMessagePrimitive( $request->getCancelUrl() ) ) );
 
@@ -213,14 +213,6 @@ class PayRequestMessageBuilder extends Object {
 		return $receiverListElement;
 	}
 
-	private function buildRequestEnvelope( RequestEnvelope $requestEnvelope , AbstractPayPalMessageFactory $factory ) {
-		$requestEnvelopeElement = $factory->createMessageElement();
-		$requestEnvelopeElement->addChild( $factory->createMessageField( 'errorLanguage' , $factory->createMessagePrimitive( $requestEnvelope->getErrorLanguage() ) ) );
-		$requestEnvelopeElement->addChild( $factory->createMessageField( 'detailLevel' , $factory->createMessagePrimitive( $requestEnvelope->getDetailLevel() ) ) );
-
-		return $requestEnvelopeElement;
-	}
-
 	private function buildSender( SenderIdentifier $sender , AbstractPayPalMessageFactory $factory ) {
 		$senderIdentifierElement = $factory->createMessageElement();
 
@@ -237,13 +229,5 @@ class PayRequestMessageBuilder extends Object {
 		}
 
 		return $senderIdentifierElement;
-	}
-
-	/**
-	 * Gets the request message
-	 * @return	PayPalMessageComponent
-	 */
-	public function getMessage() {
-		return $this->message;
 	}
 }

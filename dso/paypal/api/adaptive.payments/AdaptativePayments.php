@@ -1,6 +1,7 @@
 <?php
 require_once 'rpo/core/Object.php';
 require_once 'dso/paypal/api/adaptive.payments/operations/pay/PayOperation.php';
+require_once 'dso/paypal/api/adaptive.payments/operations/paymentDetails/PaymentDetailsOperation.php';
 
 /**
  * The Adaptive Payments API enables you to send money in many different
@@ -30,5 +31,15 @@ class AdaptativePayments extends Object {
 	 */
 	public function pay() {
 		return new PayOperation( $this->paypal->getAbstractMessageFactory() , $this->paypal->getHTTPConnection() );
+	}
+
+	/**
+	 * Use the PaymentDetails API operation to obtain information abouta payment.
+	 * You can identify the payment by your tracking ID, the PayPal transaction ID
+	 * in an IPN message, or the pay key associated with the payment.
+	 * @return	PaymentDetailsOperation
+	 */
+	public function paymentDetails() {
+		return new PaymentDetailsOperation( $this->paypal->getAbstractMessageFactory() , $this->paypal->getHTTPConnection() );
 	}
 }
